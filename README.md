@@ -22,8 +22,9 @@ pod 'SwiftEssentials'
 
 ## Author
 
-Anil Santo, anil.santo@flydubai.com
+Anil Santo, santoanil@gmail.com
 
 ## License
 
 SwiftEssentials is available under the MIT license. See the LICENSE file for more info.
+# SwiftEssentials
