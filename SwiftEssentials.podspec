@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.name             = 'SwiftEssentials'
   s.version          = '0.1.0'
   s.summary          = 'A short description of SwiftEssentials.'
-
+  s.swift_version      = '4.0'
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
 #   * Try to keep it short, snappy and to the point.
@@ -21,15 +21,14 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/Anil Santo/SwiftEssentials'
+  s.homepage         = 'https://github.com/anilsanto/SwiftEssentials'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Anil Santo' => 'anil.santo@flydubai.com' }
-  s.source           = { :git => 'https://github.com/Anil Santo/SwiftEssentials.git', :tag => s.version.to_s }
+  s.author           = { 'Anil Santo' => 'santoanil@gmail.com' }
+  s.source           = { :git => 'https://github.com/anilsanto/SwiftEssentials.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
-
+  s.ios.deployment_target = '9.0'
   s.source_files = 'SwiftEssentials/Classes/**/*'
   
   # s.resource_bundles = {
