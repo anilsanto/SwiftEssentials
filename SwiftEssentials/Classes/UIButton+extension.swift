@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+var handle: Int = 0
+
 public extension UIButton {
     private func imageWithColor(color: UIColor) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: 1, height: 1 )
@@ -27,4 +29,11 @@ public extension UIButton {
     func setBackgroundColor(color: UIColor, forUIControlState state: UIControlState) {
         self.setBackgroundImage(imageWithColor(color: color), for: state)
     }
+    
+    func addTarget(forControlEvents controlEvents : UIControlEvents, withClosure closure : @escaping (UIButton) -> Void) {
+        let closureSelector = ClosureSelector<UIButton>(withClosure: closure)
+        objc_setAssociatedObject(self, &handle, closureSelector, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        self.addTarget(closureSelector, action: closureSelector.selector, for: controlEvents)
+    }
+    
 }

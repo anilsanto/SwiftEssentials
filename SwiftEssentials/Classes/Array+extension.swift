@@ -24,10 +24,10 @@ import Foundation
 //}
 
 
-public extension NSArray{
-    func findObjects(key : String,value : String)->NSArray?{
+public extension Array{
+    func findObjects(key : String,value : String)->Array?{
         let predicate = NSPredicate(format: "%@ LIKE %@" ,key,value)
-        return self.filter { predicate.evaluate(with: $0) } as NSArray
+        return self.filter { predicate.evaluate(with: $0) } as Array
     }
     
     func getValue(forKey key: String)->[Any]{
