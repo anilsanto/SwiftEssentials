@@ -1,6 +1,5 @@
 //
 //  RequestHandler.swift
-//  FBSnapshotTestCase
 //
 //  Created by Anil Santo on 29/10/18.
 //
@@ -52,7 +51,28 @@ class RequestHandler: NSObject ,URLSessionDelegate{
         }
     }
     
-    func request<T: Decodable,E: Decodable,R: Encodable>(forUrl urlString : String,isEncoded : Bool = false,withMethod method: String,withHeader header : Dictionary<String,String>?,withBody body : R?,completionHandler: @escaping (T?,E?) ->()){
+    func GET<T: Decodable,E: Decodable>(forUrl urlString : String,isEncoded : Bool = false,withHeader header : Dictionary<String,String>?,completionHandler: @escaping (T?,E?,Int?) ->()){
+        var encodedString = ""
+        if isEncoded {
+            let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+            encodedString = percentageEncoded!.trimWhiteSpace
+        }
+        else{
+            encodedString = urlString.trimWhiteSpace
+        }
+        guard let url = URL(string: encodedString) else{ return }
+        var requestObj = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: configuration.timeoutIntervalForRequest)
+        requestObj.httpMethod = "GET"
+        if let headerField = header{
+            let allKeys = headerField.keys
+            for key in allKeys{
+                requestObj.addValue(headerField[key] ?? "", forHTTPHeaderField: key)
+            }
+        }
+        invokeRequest(requestObj: requestObj, completionHandler: completionHandler)
+    }
+    
+    func POST<T: Decodable,E: Decodable,R: Encodable>(forUrl urlString : String,isEncoded : Bool = false,withHeader header : Dictionary<String,String>?,withBody body : R?,completionHandler: @escaping (T?,E?,Int?) ->()){
         
         var encodedString = ""
         if isEncoded {
@@ -64,7 +84,7 @@ class RequestHandler: NSObject ,URLSessionDelegate{
         }
         guard let url = URL(string: encodedString) else{ return }
         var requestObj = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: configuration.timeoutIntervalForRequest)
-        requestObj.httpMethod = method
+        requestObj.httpMethod = "POST"
         if let headerField = header{
             let allKeys = headerField.keys
             for key in allKeys{
@@ -75,50 +95,80 @@ class RequestHandler: NSObject ,URLSessionDelegate{
             let jsonData = try? JSONEncoder().encode(body)
             requestObj.httpBody = jsonData
         }
+        invokeRequest(requestObj: requestObj, completionHandler: completionHandler)
+    }
+    
+    func PUT<T: Decodable,E: Decodable,R: Encodable>(forUrl urlString : String,isEncoded : Bool = false,withHeader header : Dictionary<String,String>?,withBody body : R?,completionHandler: @escaping (T?,E?,Int?) ->()){
+        
+        var encodedString = ""
+        if isEncoded {
+            let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+            encodedString = percentageEncoded!.trimWhiteSpace
+        }
+        else{
+            encodedString = urlString.trimWhiteSpace
+        }
+        guard let url = URL(string: encodedString) else{ return }
+        var requestObj = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: configuration.timeoutIntervalForRequest)
+        requestObj.httpMethod = "PUT"
+        if let headerField = header{
+            let allKeys = headerField.keys
+            for key in allKeys{
+                requestObj.addValue(headerField[key] ?? "", forHTTPHeaderField: key)
+            }
+        }
+        if body != nil{
+            let jsonData = try? JSONEncoder().encode(body)
+            requestObj.httpBody = jsonData
+        }
+        invokeRequest(requestObj: requestObj, completionHandler: completionHandler)
+    }
+    
+    func invokeRequest<T: Decodable,E: Decodable>(requestObj: URLRequest,completionHandler: @escaping (T?,E?,Int?) ->()){
         guard let urlSession = session else{
-            completionHandler(nil,nil)
+            completionHandler(nil,nil,nil)
             return
         }
         urlSession.dataTask(with: requestObj) { ( data, response, err) in
-            guard err != nil else {
-                completionHandler(nil,nil)
+            guard err == nil else {
+                completionHandler(nil,nil,nil)
                 return
             }
             guard let dataObj = data else {
-                completionHandler(nil,nil)
+                completionHandler(nil,nil,nil)
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse else {
-                completionHandler(nil,nil)
+                completionHandler(nil,nil,nil)
                 return
             }
             if (200..<300).contains(httpResponse.statusCode) {
                 do{
                     let obj = try JSONDecoder().decode(T.self, from: dataObj)
-                    completionHandler(obj,nil)
+                    completionHandler(obj,nil,httpResponse.statusCode)
                 }
                 catch{
                     do{
                         let obj = try JSONDecoder().decode(E.self, from: dataObj)
-                        completionHandler(nil,obj)
+                        completionHandler(nil,obj,httpResponse.statusCode)
                     }
                     catch{
-                        completionHandler(nil,nil)
+                        completionHandler(nil,nil,httpResponse.statusCode)
                     }
                 }
             }
             else{
                 do{
                     let obj = try JSONDecoder().decode(T.self, from: dataObj)
-                    completionHandler(obj,nil)
+                    completionHandler(obj,nil,httpResponse.statusCode)
                 }
                 catch{
                     do{
                         let obj = try JSONDecoder().decode(E.self, from: dataObj)
-                        completionHandler(nil,obj)
+                        completionHandler(nil,obj,httpResponse.statusCode)
                     }
                     catch{
-                        completionHandler(nil,nil)
+                        completionHandler(nil,nil,httpResponse.statusCode)
                     }
                 }
             }
