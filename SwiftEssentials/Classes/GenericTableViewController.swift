@@ -1,10 +1,4 @@
-//
-//  GenericTableViewController.swift
-//  LBTASimpleListControllers
-//
-//  Created by Brian Voong on 1/29/18.
-//  Copyright © 2018 Lets Build That App. All rights reserved.
-//
+
 
 import UIKit
 
