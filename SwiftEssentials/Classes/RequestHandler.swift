@@ -54,8 +54,8 @@ class RequestHandler: NSObject ,URLSessionDelegate{
     func GET<T: Decodable,E: Decodable>(forUrl urlString : String,isEncoded : Bool = false,withHeader header : Dictionary<String,String>?,completionHandler: @escaping (T?,E?,Int?) ->()){
         var encodedString = ""
         if isEncoded {
-            let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-            encodedString = percentageEncoded!.trimWhiteSpace
+            guard let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else{ return}
+            encodedString = percentageEncoded.trimWhiteSpace
         }
         else{
             encodedString = urlString.trimWhiteSpace
@@ -76,8 +76,8 @@ class RequestHandler: NSObject ,URLSessionDelegate{
         
         var encodedString = ""
         if isEncoded {
-            let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-            encodedString = percentageEncoded!.trimWhiteSpace
+            guard let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else{ return}
+            encodedString = percentageEncoded.trimWhiteSpace
         }
         else{
             encodedString = urlString.trimWhiteSpace
@@ -102,8 +102,8 @@ class RequestHandler: NSObject ,URLSessionDelegate{
         
         var encodedString = ""
         if isEncoded {
-            let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-            encodedString = percentageEncoded!.trimWhiteSpace
+            guard let percentageEncoded = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else{ return}
+            encodedString = percentageEncoded.trimWhiteSpace
         }
         else{
             encodedString = urlString.trimWhiteSpace
@@ -185,7 +185,9 @@ class RequestHandler: NSObject ,URLSessionDelegate{
         SecTrustSetPolicies(serverTrust, policies);
         
         // Evaluate server certificate
-        var result: SecTrustResultType = SecTrustResultType(rawValue: 0)!
+        guard var result: SecTrustResultType = SecTrustResultType(rawValue: 0) else{
+            return
+        }
         SecTrustEvaluate(serverTrust, &result)
         let isServerTrusted : Bool = (result == .unspecified || result == .proceed)
         let credential:URLCredential = URLCredential(trust: serverTrust)
